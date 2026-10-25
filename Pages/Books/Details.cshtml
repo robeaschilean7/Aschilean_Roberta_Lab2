@@ -41,6 +41,19 @@
         <dd class="col-sm-10">
             @Model.Book.Publisher?.PublisherName
         </dd>
+        <dt class="col-sm-2">
+            Categories
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Book.BookCategories != null)
+            {
+                foreach (var bc in Model.Book.BookCategories)
+                {
+                    @bc.Category.CategoryName
+                    <br />
+                }
+            }
+        </dd>
     </dl>
 </div>
 <div>

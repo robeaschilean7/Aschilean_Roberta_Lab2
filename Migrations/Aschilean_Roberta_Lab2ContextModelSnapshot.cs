@@ -21,7 +21,7 @@ namespace Aschilean_Roberta_Lab2.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Authors", b =>
+            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Author", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -75,6 +75,46 @@ namespace Aschilean_Roberta_Lab2.Migrations
                     b.ToTable("Book");
                 });
 
+            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.BookCategory", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("BookID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BookID");
+
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("BookCategory");
+                });
+
+            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Category", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Category");
+                });
+
             modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Publisher", b =>
                 {
                     b.Property<int>("ID")
@@ -94,7 +134,7 @@ namespace Aschilean_Roberta_Lab2.Migrations
 
             modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Book", b =>
                 {
-                    b.HasOne("Aschilean_Roberta_Lab2.Models.Authors", "Author")
+                    b.HasOne("Aschilean_Roberta_Lab2.Models.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorID");
 
@@ -107,9 +147,38 @@ namespace Aschilean_Roberta_Lab2.Migrations
                     b.Navigation("Publisher");
                 });
 
-            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Authors", b =>
+            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.BookCategory", b =>
+                {
+                    b.HasOne("Aschilean_Roberta_Lab2.Models.Book", "Book")
+                        .WithMany("BookCategories")
+                        .HasForeignKey("BookID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aschilean_Roberta_Lab2.Models.Category", "Category")
+                        .WithMany("BookCategories")
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Author", b =>
                 {
                     b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Book", b =>
+                {
+                    b.Navigation("BookCategories");
+                });
+
+            modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Category", b =>
+                {
+                    b.Navigation("BookCategories");
                 });
 
             modelBuilder.Entity("Aschilean_Roberta_Lab2.Models.Publisher", b =>

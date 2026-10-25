@@ -6,4 +6,7 @@ public class Aschilean_Roberta_Lab2Context(DbContextOptions<Aschilean_Roberta_La
     public DbSet<Aschilean_Roberta_Lab2.Models.Publisher> Publisher { get; set; } = default!;
 
     public DbSet<Aschilean_Roberta_Lab2.Models.Author> Authors { get; set; } = default!;
+
+    public DbSet<Aschilean_Roberta_Lab2.Models.Category> Category { get; set; } = default!;
+
 }
