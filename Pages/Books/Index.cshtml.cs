@@ -1,7 +1,5 @@
 using Aschilean_Roberta_Lab2.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aschilean_Roberta_Lab2.Pages.Books;
@@ -15,34 +13,59 @@ public class IndexModel : PageModel
         _context = context;
     }
 
+    public IList<Book> Book { get; set; } = default!;
     public BookData BookD { get; set; } = new BookData();
     public int BookID { get; set; }
     public int CategoryID { get; set; }
 
-    [BindProperty(SupportsGet = true)]
-    public int? AuthorFilterID { get; set; }
+    public string TitleSort { get; set; } = "";
+    public string AuthorSort { get; set; } = "";
+    public string CurrentFilter { get; set; } = "";
 
-    public SelectList AuthorList { get; set; } = default!;
-
-    public async Task OnGetAsync(int? id, int? categoryID)
+    public async Task OnGetAsync(int? id, int? categoryID, string? sortOrder, string? searchString)
     {
         BookD = new BookData();
-        AuthorList = new SelectList(_context.Set<Author>(), "ID", "FullName");
 
-        var query = _context.Book
+        TitleSort = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+        AuthorSort = sortOrder == "author" ? "author_desc" : "author";
+        CurrentFilter = searchString ?? "";
+
+        var books = await _context.Book
             .Include(b => b.Author)
             .Include(b => b.Publisher)
-            .Include(b => b.BookCategories)
-            .ThenInclude(b => b.Category)
+            .Include(b => b.BookCategories!)
+                .ThenInclude(b => b.Category)
             .AsNoTracking()
-            .AsQueryable();
+            .OrderBy(b => b.Title)
+            .ToListAsync();
 
-        if (AuthorFilterID.HasValue)
+        IEnumerable<Book> result = books;
+
+        if (!string.IsNullOrWhiteSpace(searchString))
         {
-            query = query.Where(b => b.AuthorID == AuthorFilterID);
+            result = result.Where(s =>
+                (s.Title ?? "").Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+                (s.Author?.FirstName ?? "").Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+                (s.Author?.LastName ?? "").Contains(searchString, StringComparison.OrdinalIgnoreCase));
         }
 
-        BookD.Books = await query.OrderBy(b => b.Title).ToListAsync();
+        switch (sortOrder)
+        {
+            case "title_desc":
+                result = result.OrderByDescending(s => s.Title);
+                break;
+            case "author_desc":
+                result = result.OrderByDescending(s => s.Author?.FullName);
+                break;
+            case "author":
+                result = result.OrderBy(s => s.Author?.FullName);
+                break;
+            default:
+                result = result.OrderBy(s => s.Title);
+                break;
+        }
+
+        BookD.Books = result.ToList();
 
         if (id != null)
         {
