@@ -9,4 +9,7 @@ public class Aschilean_Roberta_Lab2Context(DbContextOptions<Aschilean_Roberta_La
 
     public DbSet<Aschilean_Roberta_Lab2.Models.Category> Category { get; set; } = default!;
 
+    public DbSet<Aschilean_Roberta_Lab2.Models.Member> Member { get; set; } = default!;
+    public DbSet<Aschilean_Roberta_Lab2.Models.Borrowing> Borrowing { get; set; } = default!;
+
 }
