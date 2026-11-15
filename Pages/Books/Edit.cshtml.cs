@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Aschilean_Roberta_Lab2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -5,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aschilean_Roberta_Lab2.Pages.Books;
 
+[Authorize(Roles = "Admin")]
 public class EditModel : BookCategoriesPageModel
 {
     private readonly Aschilean_Roberta_Lab2Context _context;
